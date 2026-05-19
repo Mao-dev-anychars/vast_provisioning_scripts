@@ -19,7 +19,6 @@
 set -euo pipefail
 
 MY_FORGE_REF="${MY_FORGE_REF:-main}"
-DEPLOY_RAW_URL="https://raw.githubusercontent.com/kravtandr/my_sd_forge/${MY_FORGE_REF}/deploy"
 
 if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -27,11 +26,24 @@ else
   SCRIPT_DIR=""
 fi
 
+# Тот же каталог, что и PROVISIONING_SCRIPT (например Mao-dev-anychars/vast_provisioning_scripts/.../main)
+if [[ -n "${PROVISIONING_SCRIPT:-}" ]]; then
+  DEPLOY_RAW_URL="${PROVISIONING_SCRIPT%/*}"
+elif [[ -n "$SCRIPT_DIR" ]]; then
+  DEPLOY_RAW_URL="$SCRIPT_DIR"
+else
+  DEPLOY_RAW_URL="https://raw.githubusercontent.com/kravtandr/my_sd_forge/${MY_FORGE_REF}/deploy"
+fi
+
 COMMON_LIB="/tmp/forge-provision-common.sh"
 if [[ -n "$SCRIPT_DIR" && -f "${SCRIPT_DIR}/lib/forge-provision-common.sh" ]]; then
   COMMON_LIB="${SCRIPT_DIR}/lib/forge-provision-common.sh"
+elif curl -fsSL "${DEPLOY_RAW_URL}/lib/forge-provision-common.sh" -o "$COMMON_LIB"; then
+  printf "Loaded common lib from %s\n" "$DEPLOY_RAW_URL"
 else
-  curl -fsSL "${DEPLOY_RAW_URL}/lib/forge-provision-common.sh" -o "$COMMON_LIB"
+  printf "ERROR: cannot download lib/forge-provision-common.sh from:\n  %s/lib/forge-provision-common.sh\n" "$DEPLOY_RAW_URL" >&2
+  printf "Put deploy/lib/ and deploy/bin/ in the SAME repo/path as PROVISIONING_SCRIPT.\n" >&2
+  exit 1
 fi
 # shellcheck source=lib/forge-provision-common.sh
 source "$COMMON_LIB"
