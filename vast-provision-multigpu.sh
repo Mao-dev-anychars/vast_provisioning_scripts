@@ -8,6 +8,8 @@
 #   FORGE_GPU_COUNT=4          # optional, auto-detected via nvidia-smi
 #   NGINX_LB_PORT=7777         # single API port for llm_sd_api
 #   FORGE_BASE_PORT=7860       # backends: 7860, 7861, ...
+#   CHECKPOINT_MODEL_URL=https://civitai.com/api/download/models/82599
+#   CHECKPOINT_MODEL_URLS=    # optional: несколько URL через пробел/запятую
 #
 # Expose in template Ports: 7777/tcp (and optionally 7860-7863 for direct UI per GPU).
 #
@@ -59,10 +61,6 @@ PIP_PACKAGES=(
 )
 
 EXTENSIONS=()
-
-CHECKPOINT_MODELS=(
-  "https://civitai.com/api/download/models/82599"
-)
 
 LORA_MODELS=()
 VAE_MODELS=()

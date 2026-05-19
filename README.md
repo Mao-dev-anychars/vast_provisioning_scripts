@@ -1,0 +1,1 @@
+https://raw.githubusercontent.com/Mao-dev-anychars/vast_provisioning_scripts/refs/heads/main/vast-provision-multigpu.sh
